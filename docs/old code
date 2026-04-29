@@ -1,0 +1,86 @@
+#include <iostream>
+#include "pico/stdlib.h"
+#include "pico/cyw43_arch.h"
+#include "pico/stdlib.h"
+#include "hardware/adc.h"
+
+int main()
+{
+    stdio_init_all();
+    adc_init();
+
+    sleep_ms(2000);
+
+    const uint LIGHT_PIN_0 = 13;
+    const uint LIGHT_PIN_1 = 14;
+    const uint LIGHT_PIN_2 = 15;
+
+    const uint RAW_INPUT = 26;
+
+    gpio_init(LIGHT_PIN_0);
+    gpio_init(LIGHT_PIN_1);
+    gpio_init(LIGHT_PIN_2);
+
+    gpio_set_dir(LIGHT_PIN_0, GPIO_OUT);
+    gpio_set_dir(LIGHT_PIN_1, GPIO_OUT);
+    gpio_set_dir(LIGHT_PIN_2, GPIO_OUT);
+
+    adc_gpio_init(RAW_INPUT);
+    adc_select_input(0);
+
+    while (true)
+    {
+        uint16_t raw = adc_read();
+        float voltage = raw * 3.3f / 4095.0f;
+
+        if (voltage < 1.1f)
+        {
+            gpio_put(LIGHT_PIN_0, 1);
+            gpio_put(LIGHT_PIN_1, 0);
+            gpio_put(LIGHT_PIN_2, 0);
+        }
+        else if (voltage < 2.2f)
+        {
+            gpio_put(LIGHT_PIN_0, 1);
+            gpio_put(LIGHT_PIN_1, 1);
+            gpio_put(LIGHT_PIN_2, 0);
+        }
+        else
+        {
+            gpio_put(LIGHT_PIN_0, 1);
+            gpio_put(LIGHT_PIN_1, 1);
+            gpio_put(LIGHT_PIN_2, 1);
+        }
+
+        sleep_ms(100);
+    }
+}
+
+
+  for (int i = 0; i < 10; i++)
+        {
+            sr.writeRegister(digits[i]);
+            printf("Current Number %d\n", i);
+            sleep_ms(500);
+        }
+
+        // All OFF
+        sr.writeRegister(0x00);
+        sleep_ms(500);
+
+        // All ON
+        sr.writeRegister(0xFF);
+        sleep_ms(500);
+
+ bool pressed = !gpio_get(BUTTON);
+
+        if (pressed && !last) // just pressed
+        {
+            i = (i + 1) % 10;
+        }
+
+        sr.writeRegister(digits[i]);
+        printf("Current Number %d\n", i);
+
+        last = pressed;
+        sleep_ms(50);

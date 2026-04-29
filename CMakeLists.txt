@@ -1,16 +1,31 @@
 cmake_minimum_required(VERSION 3.13)
 
-# Force ARM toolchain before anything else
-set(CMAKE_C_COMPILER arm-none-eabi-gcc)
-set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
+set(PICO_BOARD pico2_w)
+set(PICO_PLATFORM rp2350) # Good practice to be explicit
 
-include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
-
-project(my_pico_project C CXX ASM)
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
+include(pico_sdk_import.cmake)
+project(test_project C CXX ASM)
 
 pico_sdk_init()
 
-add_subdirectory(src)
+file(GLOB MODULES_SOURCE
+        src/Module/*.cpp
+)
+
+add_executable(test_project
+        src/Main.cpp
+        ${MODULES_SOURCE}
+)
+
+target_link_libraries(test_project
+        pico_stdlib
+        hardware_adc
+        pico_cyw43_arch_none
+)
+
+# Only generate the file you need to flash
+pico_add_uf2_output(test_project)
+
+# Enable usb output, disable uart output
+pico_enable_stdio_usb(test_project 1)
+pico_enable_stdio_uart(test_project 0)
