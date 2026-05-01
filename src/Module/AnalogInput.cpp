@@ -1,11 +1,11 @@
-#include "VariableResistor.h"
+#include "AnalogInput.h"
 #include "hardware/adc.h"
 
 constexpr float ADC_MAX = 4095.0f;
 constexpr float VOLTAGE = 3.3f;
 constexpr int SAMPLE_COUNT = 16;
 
-VariableResistor::VariableResistor(const uint gpio_pin)
+AnalogInput::AnalogInput(const uint gpio_pin)
     : pin(gpio_pin), channel(gpio_pin - 26)
 {
     adc_gpio_init(pin);
@@ -13,7 +13,7 @@ VariableResistor::VariableResistor(const uint gpio_pin)
         channel = 0;
 }
 
-float VariableResistor::read_voltage() const
+float AnalogInput::read_voltage() const
 {
     adc_select_input(channel);
     float sum = 0.0f;
@@ -24,12 +24,12 @@ float VariableResistor::read_voltage() const
     return (raw_avg / ADC_MAX) * VOLTAGE;
 }
 
-float VariableResistor::read_percentage() const
+float AnalogInput::read_percentage() const
 {
     return (read_voltage() / VOLTAGE) * 100.0f;
 }
 
-int VariableResistor::read_step(const int range) const
+int AnalogInput::read_step(const int range) const
 {
     if (range <= 0)
         return 0;

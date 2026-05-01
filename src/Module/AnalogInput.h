@@ -3,14 +3,14 @@
 
 #include "pico/types.h"
 
-class VariableResistor
+class AnalogInput
 {
 protected:
     uint pin;
     uint channel;
 
 public:
-    explicit VariableResistor(uint gpio_pin);
+    explicit AnalogInput(uint gpio_pin);
 
     float read_voltage() const;
     float read_percentage() const;

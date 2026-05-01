@@ -47,6 +47,9 @@ int main()
 
     while (true)
     {
+        // Wait for USB if it disconnects
+        while (!stdio_usb_connected()) tight_loop_contents();
+
         inertial.readG(accel, gyro);
         temp = altitude.readTemperature();
         pressure = altitude.readPressure();
