@@ -20,6 +20,7 @@ add_executable(test_project
 target_link_libraries(test_project
         pico_stdlib
         hardware_adc
+        hardware_i2c
         pico_cyw43_arch_none
 )
 
