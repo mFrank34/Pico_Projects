@@ -1,7 +1,7 @@
 /*
  * File: Altitude
- * Author: Michael Franks 
- * Description:
+ * Author: Michael Franks
+ * Description: BMP180 pressure/temperature driver
  */
 
 #include "Altitude.h"
@@ -14,6 +14,8 @@ Altitude::Altitude(i2c_inst_t* i2c, uint sda, uint scl, uint8_t addr)
 
 bool Altitude::begin()
 {
+    initBus(); // <-- was missing!
+    sleep_ms(100);
     if (readReg(0xD0) != 0x55) return false;
     readCalibration();
     return true;
@@ -66,7 +68,7 @@ float Altitude::readTemperature()
 
 float Altitude::readPressure()
 {
-    readTemperature(); // Updates B5
+    readTemperature(); // updates B5
 
     int32_t UP = readRawPressure();
     int32_t B6 = B5 - 4000;

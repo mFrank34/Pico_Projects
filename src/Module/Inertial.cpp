@@ -1,7 +1,7 @@
 /*
- * File: Inertial
- * Author: Michael Franks 
- * Description:
+* File: Inertial
+ * Author: Michael Franks
+ * Description: MPU6050 accelerometer/gyroscope driver
  */
 
 #include "Inertial.h"
@@ -13,10 +13,11 @@ Inertial::Inertial(i2c_inst_t* i2c, uint sda, uint scl, uint8_t addr)
 
 bool Inertial::begin()
 {
+    initBus(); // was missing!
     sleep_ms(100);
-    writeReg(REG_PWR_MGMT_1, 0x00);
+    writeReg(REG_PWR_MGMT_1, 0x00); // wake from sleep
     sleep_ms(100);
-    return readReg(REG_WHO_AM_I) & 0x68;
+    return readReg(REG_WHO_AM_I) == 0x68; // & changed to ==
 }
 
 void Inertial::read(int16_t accel[3], int16_t gyro[3]) const

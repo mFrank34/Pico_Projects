@@ -1,11 +1,10 @@
 /*
- * File: Inertial_Measurement
- * Author: Michael Franks 
- * Description:
+* File: Inertial
+ * Author: Michael Franks
+ * Description: MPU6050 accelerometer/gyroscope driver
  */
 
-#ifndef INERTIAL_H
-#define INERTIAL_H
+#pragma once
 #include "I2cDevice.h"
 
 class Inertial : public I2cDevice
@@ -16,7 +15,6 @@ public:
     bool begin() override;
 
     void read(int16_t accel[3], int16_t gyro[3]) const;
-
     void readG(float accel[3], float gyro[3]) const;
 
 private:
@@ -24,4 +22,3 @@ private:
     static constexpr uint8_t REG_ACCEL_X_OUT = 0x3B;
     static constexpr uint8_t REG_WHO_AM_I = 0x75;
 };
-#endif //INERTIAL_H

@@ -1,17 +1,12 @@
 /*
- * File: Altitude
- * Author: Michael Franks 
- * Description:
+* File: Altitude
+ * Author: Michael Franks
+ * Description: BMP180 pressure/temperature driver
  */
-
-#ifndef ALTITUDE_H
-#define ALTITUDE_H
 
 #pragma once
 #include <cstdint>
-
 #include "I2cDevice.h"
-#include "hardware/i2c.h"
 
 class Altitude : public I2cDevice
 {
@@ -19,8 +14,8 @@ public:
     Altitude(i2c_inst_t* i2c, uint sda, uint scl, uint8_t addr = 0x77);
 
     bool begin() override;
-    float readTemperature(); // °C
-    float readPressure(); // hPa
+    float readTemperature();
+    float readPressure();
 
 private:
     int16_t AC1, AC2, AC3;
@@ -38,4 +33,3 @@ private:
     static constexpr uint8_t CMD_TEMP = 0x2E;
     static constexpr uint8_t CMD_PRESSURE = 0x34;
 };
-#endif //ALTITUDE_H

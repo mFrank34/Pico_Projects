@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 set(PICO_BOARD pico2_w)
-set(PICO_PLATFORM rp2350) # Good practice to be explicit
+set(PICO_PLATFORM rp2350)
 
 include(pico_sdk_import.cmake)
 project(test_project C CXX ASM)
@@ -28,5 +28,6 @@ target_link_libraries(test_project
 pico_add_uf2_output(test_project)
 
 # Enable usb output, disable uart output
+pico_add_uf2_output(test_project)
 pico_enable_stdio_usb(test_project 1)
 pico_enable_stdio_uart(test_project 0)
