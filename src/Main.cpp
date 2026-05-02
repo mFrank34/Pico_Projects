@@ -21,21 +21,21 @@
 
 // Front module pins
 #define F_PWMA  0
-#define F_AIN1  1
-#define F_AIN2  2
-#define F_PWMB  3
-#define F_BIN1  4
-#define F_BIN2  5
+#define F_AIN2  1
+#define F_AIN1  2
 #define F_STBY  6
+#define F_BIN1  3
+#define F_BIN2  4
+#define F_PWMB  5
 
 // Rear module pins
 #define R_PWMA  16
-#define R_AIN1  17
-#define R_AIN2  18
-#define R_PWMB  19
-#define R_BIN1  20
-#define R_BIN2  21
+#define R_AIN2  17
+#define R_AIN1  18
 #define R_STBY  22
+#define R_BIN1  19
+#define R_BIN2  20
+#define R_PWMB  21
 
 void blinkBattery(float percent)
 {
@@ -159,7 +159,9 @@ int main()
                 blinkBattery(battery.percentage());
         }
 
-
-        sleep_ms(250);
+        quad.setFL(1.0f);
+        quad.setFR(1.0f);
+        quad.setBL(1.0f);
+        quad.setBR(1.0f);
     }
 }
