@@ -6,6 +6,7 @@
 #include "Module/Altitude.h"
 #include "Module/Inertial.h"
 #include "Module/Battery.h"
+#include "Module/QuadController.h"
 
 // Inertial sensor on i2c0
 #define MPU_SDA_PIN 12
@@ -18,14 +19,23 @@
 // Battery on ADC0
 #define BATTERY_PIN 26
 
-#define PWMA 0 // Motor A speed (PWM)
-#define AIN1 1 // Motor A direction
-#define AIN2 2 // Motor A direction
-#define PWMB 3 // Motor B speed (PWM)
-#define BIN1 4 // Motor B direction
-#define BIN2 5 // Motor B direction
-#define STBY 6 // Standby enable
+// Front module pins
+#define F_PWMA  0
+#define F_AIN1  1
+#define F_AIN2  2
+#define F_PWMB  3
+#define F_BIN1  4
+#define F_BIN2  5
+#define F_STBY  6
 
+// Rear module pins
+#define R_PWMA  16
+#define R_AIN1  17
+#define R_AIN2  18
+#define R_PWMB  19
+#define R_BIN1  20
+#define R_BIN2  21
+#define R_STBY  22
 
 void blinkBattery(float percent)
 {
@@ -37,7 +47,7 @@ void blinkBattery(float percent)
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
         sleep_ms(200);
     }
-    sleep_ms(1000); // pause between blink groups
+    sleep_ms(1000);
 }
 
 int main()
@@ -45,7 +55,7 @@ int main()
     stdio_init_all();
     sleep_ms(2000);
 
-    // Init CYW43 for LED use
+    // CYW43 must be first — LED depends on it
     if (cyw43_arch_init())
     {
         printf("ERROR: CYW43 init failed!\n");
@@ -53,6 +63,7 @@ int main()
     }
     printf("CYW43 OK\n");
 
+    // Sensors
     printf("Creating Inertial...\n");
     Inertial inertial(i2c0, MPU_SDA_PIN, MPU_SCL_PIN);
     printf("Creating Altitude...\n");
@@ -73,12 +84,50 @@ int main()
         while (true) tight_loop_contents();
     }
     printf("BMP180 OK\n");
-    printf("All sensors ready!\n\n");
+
+    // Motors
+    printf("Creating QuadMotorController...\n");
+    QuadController quad(
+        F_PWMA, F_AIN1, F_AIN2, F_PWMB, F_BIN1, F_BIN2, F_STBY,
+        R_PWMA, R_AIN1, R_AIN2, R_PWMB, R_BIN1, R_BIN2, R_STBY
+    );
+    quad.begin();
+    printf("Motors OK\n");
+
+    // Test each motor one at a time
+    printf("FL...\n");
+    quad.setFL(1.0f);
+    sleep_ms(2000);
+    quad.coast();
+    sleep_ms(500);
+
+    printf("FR...\n");
+    quad.setFR(1.0f);
+    sleep_ms(2000);
+    quad.coast();
+    sleep_ms(500);
+
+    printf("BL...\n");
+    quad.setBL(1.0f);
+    sleep_ms(2000);
+    quad.coast();
+    sleep_ms(500);
+
+    printf("BR...\n");
+    quad.setBR(1.0f);
+    sleep_ms(2000);
+    quad.coast();
+    sleep_ms(500);
+
+    printf("Done!\n");
+
+    printf("All systems ready!\n\n");
+
+    // Main sensor loop
+    int loop_count = 0;
 
     float accel[3], gyro[3];
     float temp, pressure;
-
-    int loop_count = 0;
 
     while (true)
     {
@@ -101,14 +150,16 @@ int main()
                 printf("  %.2fV  %.1f%%\n\n", battery.voltage(), battery.percentage());
         }
 
-        // Only blink every 10 loops (~5 seconds)
+        // Blink every 10 loops (~5 seconds) only on battery
         loop_count++;
         if (loop_count >= 10)
         {
             loop_count = 0;
-            blinkBattery(battery.percentage());
+            if (!battery.isUsbConnected())
+                blinkBattery(battery.percentage());
         }
 
-        sleep_ms(500);
+
+        sleep_ms(250);
     }
 }
