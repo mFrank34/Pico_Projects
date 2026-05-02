@@ -21,6 +21,7 @@ target_link_libraries(test_project
         pico_stdlib
         hardware_adc
         hardware_i2c
+        hardware_pwm
         pico_cyw43_arch_none
 )
 

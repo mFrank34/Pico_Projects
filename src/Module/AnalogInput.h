@@ -1,20 +1,29 @@
-#ifndef VARIABLE_RESISTOR_H
-#define VARIABLE_RESISTOR_H
+/*
+* File: AnalogInput
+ * Author: Michael Franks
+ * Description: Base class for analog input devices
+ */
 
-#include "pico/types.h"
+#pragma once
+#include "hardware/adc.h"
 
 class AnalogInput
 {
+public:
+    explicit AnalogInput(uint gpio_pin);
+
+    virtual ~AnalogInput() = default;
+
 protected:
     uint pin;
     uint channel;
 
-public:
-    explicit AnalogInput(uint gpio_pin);
-
     float read_voltage() const;
     float read_percentage() const;
     int read_step(int range) const;
-};
 
-#endif //VARIABLE_RESISTOR_H
+private:
+    static constexpr float ADC_MAX = 4095.0f;
+    static constexpr float VOLTAGE = 3.3f;
+    static constexpr int SAMPLE_COUNT = 16;
+};

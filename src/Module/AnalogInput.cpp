@@ -1,13 +1,15 @@
+/*
+* File: AnalogInput
+ * Author: Michael Franks
+ * Description: Base class for analog input devices
+ */
+
 #include "AnalogInput.h"
-#include "hardware/adc.h"
 
-constexpr float ADC_MAX = 4095.0f;
-constexpr float VOLTAGE = 3.3f;
-constexpr int SAMPLE_COUNT = 16;
-
-AnalogInput::AnalogInput(const uint gpio_pin)
+AnalogInput::AnalogInput(uint gpio_pin)
     : pin(gpio_pin), channel(gpio_pin - 26)
 {
+    adc_init();
     adc_gpio_init(pin);
     if (channel > 2)
         channel = 0;
@@ -29,14 +31,13 @@ float AnalogInput::read_percentage() const
     return (read_voltage() / VOLTAGE) * 100.0f;
 }
 
-int AnalogInput::read_step(const int range) const
+int AnalogInput::read_step(int range) const
 {
     if (range <= 0)
         return 0;
 
-    const float voltage = read_voltage();
-    const float normalized = voltage / VOLTAGE;
-    int step = normalized * (range - 1);
+    const float normalized = read_voltage() / VOLTAGE;
+    int step = static_cast<int>(normalized * (range - 1));
 
     if (step >= range)
         step = range - 1;
